@@ -58,16 +58,24 @@ Steam library on another drive:
 
 ## Uninstall
 
-Double-click **Uninstall.command**. It removes the runtime and launcher and puts
-the game back exactly as Steam shipped it. Your saves are never touched.
+Double-click **Uninstall.command**. It removes the runtime and launcher. If you
+had used `--steam`, it also restores the original launcher from the backup, so the
+game ends up exactly as Steam shipped it. Your saves are never touched.
 
 ## What it touches
+
+A normal install writes exactly two things, both outside the game:
 
 - `~/Library/Application Support/CuriousExpedition-Metal` — the new runtime (~270 MB)
 - `~/Applications/Curious Expedition (Metal).app` — the launcher
 
-Nothing else. No system files, no background processes, no analytics, nothing
-sent anywhere.
+**The Steam game folder is read, never modified by a normal install.** The one
+exception is the optional `./install.sh --steam`, which rewrites Steam's own
+`run_app.sh` so the Play button starts the new runtime. It copies the original to
+`run_app.sh.pre-metal` first, and Uninstall restores it. If you never passed
+`--steam`, there is nothing of ours inside the game folder to undo.
+
+No system files, no background processes, no analytics, nothing sent anywhere.
 
 ## No game files here
 
