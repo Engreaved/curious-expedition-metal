@@ -3,6 +3,7 @@ node_modules/
 *.zip
 runtime/
 
-# Save/profile data. The game creates this beside its working directory when it
-# is launched from one; it must never end up in this repository.
+# Save/profile data belonging to Curious Expedition by Maschinen-Mensch. The game
+# creates this folder beside its working directory when launched from one. It is
+# user data, never repository content.
 TheCuriousExpedition/
