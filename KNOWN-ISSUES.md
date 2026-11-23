@@ -57,6 +57,14 @@ its overlay cannot attach and it does not consider the game "running".
 **What to do:** run the installer once with `--steam` so Steam starts the new
 runtime itself. That restores Steam ownership of the launch. Note item 5.
 
+### 4a. The installer changes Steam's launcher by default **[seen]**
+**What you see:** the game folder contains `run_app.sh.pre-metal` and `run_app.sh`
+now mentions the Metal runtime.
+**Why:** that is how Steam's Play button ends up starting the new runtime. It is
+the default because pressing Play is how the game is actually played.
+**What to do:** nothing. `Uninstall.command` restores the original. If you never
+want the game folder touched, reinstall with `./install.sh --no-steam`.
+
 ### 5. Steam's "Verify integrity of game files" undoes the Steam integration **[expected]**
 **What you see:** after verifying files in Steam, Play goes back to the old slow
 runtime, or shows the old "OS Error 0" failure.
@@ -96,14 +104,22 @@ about 60. The 121 fps figure measured on this machine is its 120 Hz display, not
 a guarantee.
 **What to do:** nothing. It is already drawing as fast as the screen can show.
 
-### 8. Steam achievements and other Steam features may not work at all **[seen]**
-**What you see:** in the console log, `GREENWORKS failed init: TypeError:
-Cannot set properties of undefined (setting 'ugcGetItems')`.
-**Why:** the game's Steam integration is an old native module that does not load
-under the modern runtime.
-**What to do:** nothing available today. This project does not fix the Steam
-integration; it fixes the engine and the graphics path. Treat achievements as
-unreliable.
+### 8. Steam achievements and the Workshop cannot work in this runtime **[seen]**
+**What you see:** achievements never unlock; the Workshop button does nothing; the
+log says `GREENWORKS failed init`.
+**Why:** the game talks to Steam through `app/lib/greenworks-osx64.node`, a native
+module shipped with the game. It is **x86_64 only** and built for the Node ABI of
+the 2018 engine. On Apple Silicon the loader refuses it outright:
+
+    incompatible architecture (have 'x86_64', need 'arm64e, arm64')
+
+This is not a setting to flip. It would need the module rebuilt for arm64 and the
+modern ABI, and neither its source nor the Steamworks SDK ships with the game.
+**What to do:** understand the trade. The original runtime has achievements
+precisely because it runs x86_64 under Rosetta with a matching ABI — that is what
+you give up for native speed. Playtime, the overlay and cloud save sync do **not**
+depend on this module, and they work when Steam launches the game, which the
+installer sets up by default.
 
 ### 9. The app has no custom icon **[seen]**
 It shows the generic application icon. Cosmetic only; fixing it would mean

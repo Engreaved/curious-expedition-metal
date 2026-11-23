@@ -26,11 +26,13 @@ at all.
 1. Download this repository: green **Code** button → **Download ZIP**, then
    double-click the zip to unpack it. (git works too, but is not needed.)
 2. Double-click **Install.command** in the unpacked folder.
-3. When it finishes, open **Curious Expedition (Metal)** with Spotlight
-   (⌘-Space, type its name). It installs into *your user* Applications folder,
-   `~/Applications` — **not** `/Applications` — so the "Applications" item in
-   Finder's sidebar will not show it. That location is deliberate: no
-   administrator password is needed to write there.
+3. Press **Play** in Steam as usual. The installer points Steam's launcher at the
+   new runtime, so Steam still owns the launch.
+
+   The game is also in *your user* Applications folder (`~/Applications`, not
+   `/Applications`) if you would rather start it there — use Spotlight (⌘-Space).
+   That location is deliberate: no administrator password is needed to write
+   there. Use `./install.sh --no-steam` to leave Steam's launcher alone.
 
 No questions, no password, no configuration, nothing to type. Usually well under
 a minute, with roughly 115 MB of downloads. Running it twice is harmless.
@@ -64,18 +66,21 @@ game ends up exactly as Steam shipped it. Your saves are never touched.
 
 ## What it touches
 
-A normal install writes exactly two things, both outside the game:
-
 - `~/Library/Application Support/CuriousExpedition-Metal` — the new runtime (~270 MB)
 - `~/Applications/Curious Expedition (Metal).app` — the launcher
+- **Steam's own `run_app.sh`**, inside the game folder, rewritten so the Play
+  button starts the new runtime. The original is copied to
+  `run_app.sh.pre-metal` first and Uninstall restores it.
 
-**The Steam game folder is read, never modified by a normal install.** The one
-exception is the optional `./install.sh --steam`, which rewrites Steam's own
-`run_app.sh` so the Play button starts the new runtime. It copies the original to
-`run_app.sh.pre-metal` first, and Uninstall restores it. If you never passed
-`--steam`, there is nothing of ours inside the game folder to undo.
+The third item is what keeps Steam in charge. Steam stays the parent process, so
+playtime is counted, the overlay can attach, and cloud save sync still applies —
+which is the whole point of doing it that way.
 
-No system files, no background processes, no analytics, nothing sent anywhere.
+Pass `--no-steam` and the game folder is left completely untouched; then launch
+from the Applications folder instead.
+
+Nothing else. No system files, no background processes, no analytics, nothing
+sent anywhere.
 
 ## No game files here
 

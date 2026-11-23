@@ -54,7 +54,8 @@ Nothing about the game changes. Same files, same saves, same content.
 [*]Double-click the downloaded zip to unpack it.
 [*]Open the unpacked folder and double-click [b]Install.command[/b].
 [*]Wait well under a minute; it downloads roughly 115 MB.
-[*]Open [b]Curious Expedition (Metal)[/b] with Spotlight (Cmd-Space). It installs to your user Applications folder (~/Applications), not /Applications, so the Finder sidebar will not show it.
+[*]Press [b]Play[/b] in Steam as usual. The installer points Steam's launcher at the new runtime, so Steam stays in charge: playtime counts, the overlay can attach, cloud saves sync.
+[*]Prefer to launch it directly? The app is in your user Applications folder (~/Applications, not /Applications) - find it with Spotlight (Cmd-Space). Add --no-steam to the installer to leave Steam's launcher alone.
 [/list]
 
 No questions, no password, nothing to type.

@@ -73,10 +73,18 @@ APP="$HOME/Applications/Curious Expedition (Metal).app"
 # Directory this script sits in, whatever folder the user runs it from.
 HERE="$(cd "$(dirname "$0")" && pwd)"
 
-# Opt-in flag: also make Steam's own Play button use the new runtime.
-# Off by default, because that is the only behaviour that edits a game file.
-WANT_STEAM=0
-[ "${1:-}" = "--steam" ] && WANT_STEAM=1
+# Steam integration is ON by default, because that is how the game is actually
+# played: the Play button in Steam. With it on, Steam stays the parent process,
+# so playtime is counted, the overlay can attach, and Steam's cloud save sync
+# still applies. Pass --no-steam to keep the game folder completely untouched
+# and launch from the app in ~/Applications instead.
+WANT_STEAM=1
+for arg in "$@"; do
+  case "$arg" in
+    --no-steam) WANT_STEAM=0 ;;
+    --steam)    WANT_STEAM=1 ;;
+  esac
+done
 
 # One small helper so every failure prints the same readable shape and stops.
 die() {
@@ -278,10 +286,21 @@ LAUNCH
 chmod +x "$APP/Contents/MacOS/launch"
 
 # ---------------------------------------------------------------------------
-# STEP 8 (optional) - make Steam's Play button use the new runtime too.
+# STEP 8 - point Steam's Play button at the new runtime.
 # ---------------------------------------------------------------------------
-# Only with --steam. The original launcher is backed up first, and Uninstall
-# puts it back. Steam's "Verify integrity of game files" also restores it.
+# On by default; --no-steam skips it. The original launcher is backed up first,
+# and Uninstall puts it back. Steam's "Verify integrity of game files" also
+# restores it, which is why re-running this installer fixes that case.
+if [ "$WANT_STEAM" = "1" ]; then
+  # A game install without run_app.sh is unexpected, but it must not abort an
+  # otherwise complete install: skip the integration and say so.
+  if [ ! -f "$GAME/run_app.sh" ] && [ ! -f "$GAME/run_app.sh.pre-metal" ]; then
+    echo "  note: this game folder has no run_app.sh, so Steam's Play button was left alone."
+    echo "        Launch the game from your Applications folder instead."
+    WANT_STEAM=0
+  fi
+fi
+
 if [ "$WANT_STEAM" = "1" ]; then
   [ -f "$GAME/run_app.sh.pre-metal" ] || cp "$GAME/run_app.sh" "$GAME/run_app.sh.pre-metal"
 
@@ -303,8 +322,15 @@ fi
 # Done.
 # ---------------------------------------------------------------------------
 echo ""
-echo "  Installed. The game is now in your Applications folder as:"
-echo "    Curious Expedition (Metal)"
+if [ "$WANT_STEAM" = "1" ]; then
+  echo "  Installed, and Steam's Play button now starts the native runtime."
+  echo "  Press Play in Steam as usual."
+else
+  echo "  Installed. Launch the game from your Applications folder:"
+  echo "    Curious Expedition (Metal)   (Spotlight: Cmd-Space)"
+fi
 echo ""
-echo "  Double-click it to play. To remove everything later, run Uninstall.command."
+echo "  Note: in-game Steam achievements and the Workshop need the game's original"
+echo "  2018 engine. See KNOWN-ISSUES.md #8 for why, and what does still work."
+echo "  To remove everything later, run Uninstall.command."
 echo ""

@@ -92,10 +92,13 @@ will tell you so and stop.
    double-click the zip to unpack it). Using git is fine too, but not required.
 2. Open the unpacked folder and double-click **Install.command**.
 3. Wait well under a minute. It downloads roughly 115 MB.
-4. When it finishes, open **Curious Expedition (Metal)** with Spotlight
-   (⌘-Space, type its name). It lands in *your user* Applications folder,
-   `~/Applications`, not `/Applications` — that is deliberate, so no
-   administrator password is needed.
+4. When it finishes, press **Play** in Steam as usual. The installer points
+   Steam's launcher at the new runtime, so Steam stays in charge: playtime is
+   counted, the overlay can attach, and cloud saves still sync.
+
+   The game is also in *your user* Applications folder (`~/Applications`, not
+   `/Applications`) if you prefer to start it there. Use `--no-steam` to leave
+   Steam's launcher untouched.
 
 That is the whole procedure. No questions, no password, no options, nothing to
 configure. Running it a second time is harmless.
