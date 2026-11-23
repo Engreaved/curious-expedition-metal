@@ -137,7 +137,7 @@ Full explanation and measurements: [DESCRIPTION.md](DESCRIPTION.md).
 Known bugs, caveats and untested areas: [KNOWN-ISSUES.md](KNOWN-ISSUES.md).
 Ready-to-paste Steam guide: [docs/STEAM-GUIDE.md](docs/STEAM-GUIDE.md).
 
-## License
+## Licence
 
 MIT — see [LICENSE](LICENSE). Electron and `@electron/remote` are MIT and are
 downloaded at install time, never redistributed.

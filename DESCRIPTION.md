@@ -156,7 +156,7 @@ restores the game exactly as Steam shipped it. Your saves are never touched.
   Applications folder, because Steam is not the parent process. Use
   `./install.sh --steam` if you want Steam to own the launch.
 
-## License
+## Licence
 
 The scripts here are released under the MIT licence (see `LICENSE`). Electron is
 MIT and is downloaded at install time, not redistributed. `@electron/remote` is
