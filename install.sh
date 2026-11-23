@@ -28,6 +28,17 @@
 # TO UNDO IT
 #   Double-click "Uninstall.command", or run ./uninstall.sh
 #
+# WHERE TO LOOK
+#   Comments marked "Breadcrumb:" sit next to the decisions that are not
+#   obvious. If you are reading this to change something, start here:
+#
+#     why the versions are pinned ................ STEP 3 (ELECTRON_VERSION)
+#     why downloads are checksum-checked ......... STEP 3 and STEP 4
+#     why the game path is kept in a file ........ STEP 6 (game-path)
+#     why the launcher is a shell script ......... STEP 7
+#     why the window is configured oddly ......... files/shim.js, top of file
+#     what a user can trip over .................. KNOWN-ISSUES.md
+#
 # ---------------------------------------------------------------------------
 # Housekeeping: stop on any error, on any undefined variable, and on any failing
 # command inside a pipe. Failing loudly beats failing halfway through.
@@ -35,6 +46,8 @@ set -euo pipefail
 
 # Exact versions we build against. Pinned on purpose: a newer Electron could
 # change behaviour under us without warning.
+# Breadcrumb: bumping these is the only supported way to update the runtime.
+# The checksums below are tied to these numbers; read KNOWN-ISSUES.md #13 first.
 ELECTRON_VERSION="45.4.1"
 REMOTE_VERSION="2.1.4"
 
@@ -121,6 +134,9 @@ if [ ! -x "$RUNTIME/electron/Electron.app/Contents/MacOS/Electron" ]; then
 
   # The publisher's list of checksums. We use it to prove the download arrived
   # intact and unmodified before letting macOS run any of it.
+  # Breadcrumb: this is a supply-chain check, not a formality. If it fails, do not
+  # "just re-run with the check removed" - a mismatched binary means something is
+  # wrong with the connection or the source.
   curl -fsSL --retry 3 -o "$work/SHASUMS256.txt" "$base/SHASUMS256.txt" \
     || die "could not download the checksum list needed to verify Electron."
 
@@ -196,6 +212,8 @@ cp "$HERE/files/shim.js"    "$RUNTIME/shim.js"
 cp "$HERE/files/preload.js" "$RUNTIME/preload.js"
 
 # Remember where the game actually is, so the launcher does not have to guess.
+# Breadcrumb: this is a file rather than a value baked into the launcher so the
+# launcher keeps working if the game moves; see KNOWN-ISSUES.md #15.
 printf '%s\n' "$GAME" > "$RUNTIME/game-path"
 
 # ---------------------------------------------------------------------------

@@ -1,0 +1,143 @@
+# Known bugs, caveats and rough edges
+
+Everything here was either observed while building this, or is an honest
+limitation of what it can do. Nothing is hidden to look better.
+
+Each entry says what you will see, why it happens, and what to do about it.
+Entries marked **[seen]** were reproduced on the development machine; entries
+marked **[expected]** follow from how the pieces work but were not reproduced.
+
+---
+
+## Before you start
+
+### 1. The first double-click of Install.command may do nothing at all **[seen]**
+**What you see:** you double-click `Install.command` and absolutely nothing
+happens. No window, no error, no explanation.
+**Why:** macOS marks files downloaded from the internet as quarantined, and
+Gatekeeper refuses to run an unsigned script from a quarantine. This project has
+no Apple signing certificate, so it cannot avoid that. The silence is macOS, not
+this project.
+**What to do:** open Terminal, type `bash ` (with a trailing space), drag
+`Install.command` from Finder into the Terminal window and press Return.
+Gatekeeper does not gate scripts started that way. Alternatively right-click the
+file → **Open** → **Open**, or allow it under System Settings → Privacy &
+Security → "Open Anyway".
+**Not affected:** the app the installer creates. That is built on your own Mac,
+so it is never quarantined and never prompts.
+
+### 2. It refuses to run on an Intel Mac **[seen]**
+**What you see:** "this Mac is not Apple Silicon".
+**Why:** deliberate. Intel Macs already run the game natively; this project
+exists only to escape Rosetta.
+**What to do:** nothing. Play the game as Steam installed it.
+
+### 3. macOS older than 11 is refused **[seen]**
+Electron 45 does not support it. There is no build for those systems.
+
+---
+
+## While playing
+
+### 4. No Steam overlay, achievements, playtime or cloud sync **[seen]**
+**What you see:** the Steam overlay never appears; hours are not counted;
+achievements may not unlock; cloud saves do not sync.
+**Why:** when you launch from Applications, Steam is not the parent process, so
+its overlay cannot attach and it does not consider the game "running".
+**What to do:** run the installer once with `--steam` so Steam starts the new
+runtime itself. That restores Steam ownership of the launch. Note item 5.
+
+### 5. Steam's "Verify integrity of game files" undoes the Steam integration **[expected]**
+**What you see:** after verifying files in Steam, Play goes back to the old slow
+runtime, or shows the old "OS Error 0" failure.
+**Why:** verifying rewrites `run_app.sh`, which is the file the installer
+repoints.
+**What to do:** re-run `Install.command` (or `./install.sh --steam`).
+
+### 6. The game may create a save folder inside the runtime folder **[seen]**
+**What you see:** a folder `TheCuriousExpedition` appears inside
+`~/Library/Application Support/CuriousExpedition-Metal/`.
+**Why:** the game looks for its save data in `~/Documents/TheCuriousExpedition`
+first, and if a particular file is not there it also tries a path relative to
+the folder it was started in. The launcher starts it inside the runtime folder,
+so that fallback can land there.
+**What to do:** usually nothing — your real saves in ~/Documents still load and
+still take priority (verified). If you ever see progress "reset", check which of
+the two folders is newer before assuming data was lost.
+**Note:** two copies of the game running at once can write the same save files
+and corrupt them. The game does not lock its saves, so avoid launching it twice.
+
+### 7. It uses more CPU than the old runtime **[seen]**
+**What you see:** Activity Monitor shows a busy renderer; the machine gets warm.
+**Why:** the modern runtime runs at 120 fps on ProMotion displays and renders at
+1920×1080 instead of a 640×360 buffer. That is twice the frames at nine times
+the pixels. Renderer CPU measured 47.8% versus 29.4% before; per frame it is
+cheaper, but per second it is more work.
+**What to do:** close the game when you are not playing. Unlike the original
+runtime, this one does not disable background throttling, so a hidden window
+settles down instead of rendering flat out.
+
+### 8. Steam achievements and other Steam features may not work at all **[seen]**
+**What you see:** in the console log, `GREENWORKS failed init: TypeError:
+Cannot set properties of undefined (setting 'ugcGetItems')`.
+**Why:** the game's Steam integration is an old native module that does not load
+under the modern runtime.
+**What to do:** nothing available today. This project does not fix the Steam
+integration; it fixes the engine and the graphics path. Treat achievements as
+unreliable.
+
+### 9. The app has no custom icon **[seen]**
+It shows the generic application icon. Cosmetic only; fixing it would mean
+shipping artwork this project does not own.
+
+---
+
+## Untested, and therefore unknown
+
+### 10. Only one machine has run this **[seen]**
+An M1 Pro MacBook Pro, macOS 27.2, game version 1.4.1.2. The project claims M1
+through M6 because it contains nothing machine-specific, but **M2, M3, M4, M5
+and M6 have not been tested**. If you have one and something breaks, that is new
+information rather than a known problem.
+
+### 11. Several in-game features were never exercised **[expected]**
+Verified working: the world map, party, inventory, combat, saving and loading.
+**Never tested:** the gallery, the online/IO features, and anything that talks to
+the game's web services. Those may work, may hang, or may fail quietly.
+
+### 12. Fullscreen and window keys were not tested **[expected]**
+The game asks Electron to change fullscreen state through the remote module the
+preload file restores. That mechanism is present and the calls resolve, but the
+actual fullscreen toggle was not pressed during testing.
+
+---
+
+## Maintenance
+
+### 13. Electron is pinned and does not update itself **[by design]**
+The runtime is Electron 45.4.1 exactly. That makes behaviour predictable and the
+checksum meaningful, but security fixes for Electron do not arrive on their own.
+To update: change `ELECTRON_VERSION` and `REMOTE_VERSION` in `install.sh`,
+delete the runtime folder, re-run the installer, and test the game before
+publishing.
+
+### 14. Installing needs an internet connection **[seen]**
+About 115 MB is downloaded. With no connection the installer stops with a clear
+message and changes nothing.
+
+### 15. Moving the game breaks the launcher **[expected]**
+The installer records where the game is at install time. If you move the Steam
+library afterwards, the launcher will report that the game files are missing.
+**What to do:** re-run the installer from the new location.
+
+---
+
+## If something goes wrong
+
+1. **The game's own log** is the first place to look:
+   `The Curious Expedition/tce-log.txt` inside the Steam game folder. It records
+   what loaded and which save paths were tried.
+2. **Check the runtime starts at all** (prints a version number):
+   `~/Library/Application Support/CuriousExpedition-Metal/electron/Electron.app/Contents/MacOS/Electron --version`
+3. **Undo everything** with `Uninstall.command`. The game and your saves are never
+   touched by the installer, so this always returns you to the stock game.

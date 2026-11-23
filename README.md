@@ -120,7 +120,8 @@ in this repository for you to read first.
 - Steam's **Verify integrity of game files** restores the original launcher;
   re-run the installer after that.
 
-Full explanation, measurements and caveats: [DESCRIPTION.md](DESCRIPTION.md).
+Full explanation and measurements: [DESCRIPTION.md](DESCRIPTION.md).
+Known bugs, caveats and untested areas: [KNOWN-ISSUES.md](KNOWN-ISSUES.md).
 Ready-to-paste Steam guide: [docs/STEAM-GUIDE.md](docs/STEAM-GUIDE.md).
 
 ## Licence

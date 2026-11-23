@@ -35,6 +35,12 @@
 //
 // USAGE (normally done for you by the launcher app):
 //   Electron.app/Contents/MacOS/Electron shim.js /path/to/play-electron.html
+//
+// BREADCRUMBS
+//   the remote patch the game actually calls -> preload.js
+//   why the window options look unusual      -> webPreferences below
+//   what users trip over                     -> KNOWN-ISSUES.md
+//   the game's own log                       -> <game folder>/tce-log.txt
 
 const { app, BrowserWindow, dialog } = require('electron');
 const path = require('path');
