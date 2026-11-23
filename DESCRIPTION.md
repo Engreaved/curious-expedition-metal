@@ -65,8 +65,8 @@ fault of this project, not of the developers of the game.
 ## No game files are included
 
 Nothing belonging to the game is distributed here. No artwork, no audio, no
-code, no data files. The repository contains about twenty kilobytes of text: a
-shell script, two small JavaScript files, and documentation.
+code, no data files. The repository contains about forty kilobytes of text:
+four small shell scripts, two small JavaScript files, and documentation.
 
 The installer reads the game from the copy you already own on Steam and never
 copies it. That is also why the game must already be installed before this runs.
@@ -85,17 +85,27 @@ will tell you so and stop.
 1. Download this repository (green **Code** button → **Download ZIP**, then
    double-click the zip to unpack it). Using git is fine too, but not required.
 2. Open the unpacked folder and double-click **Install.command**.
-3. Wait about a minute. It downloads roughly 115 MB.
+3. Wait well under a minute. It downloads roughly 115 MB.
 4. When it finishes, the game is in your Applications folder as
    **Curious Expedition (Metal)**. Double-click it to play.
 
 That is the whole procedure. No questions, no password, no options, nothing to
 configure. Running it a second time is harmless.
 
-If macOS refuses to open **Install.command** the first time, saying it is from an
-unidentified developer, right-click it, choose **Open**, and confirm once. This
-project cannot afford an Apple signing certificate, so Gatekeeper is cautious
-about files downloaded from the internet. You only ever do this once.
+If macOS refuses to open **Install.command** the first time, it is Gatekeeper
+being cautious about a script downloaded from the internet, because this project
+cannot afford an Apple signing certificate. Approve it once and it never asks
+again. The reliable way, which Gatekeeper does not gate:
+
+1. Open Terminal, type `bash ` (with a trailing space), drag `Install.command`
+   from Finder into the Terminal window, and press Return.
+
+Or, in Finder: right-click `Install.command` → **Open** → **Open**. If that option
+is missing (recent macOS), allow it under **System Settings → Privacy & Security →
+"Open Anyway"** after trying once.
+
+The app the installer creates needs no approval: it is built on your own Mac, and
+macOS only gates files that arrived from the internet.
 
 If you prefer the terminal, the same thing is:
 
@@ -117,7 +127,7 @@ restores the game exactly as Steam shipped it. Your saves are never touched.
 ## What it changes on your Mac
 
 - `~/Library/Application Support/CuriousExpedition-Metal` — the new runtime
-  (about 268 MB, mostly Electron itself).
+  (about 270 MB, mostly Electron itself).
 - `~/Applications/Curious Expedition (Metal).app` — the launcher.
 - Nothing else. No system files, no settings, no background processes, no login
   items. It does not touch the game's files unless you explicitly pass

@@ -7,7 +7,7 @@ guide body, using Steam's "source"/BBCode view if it offers one.
 
 Suggested title:
 
-    Run natively on Apple Silicon — Metal, 120 fps, no Rosetta
+    Run natively on Apple Silicon — Metal, over 120 fps, no Rosetta
 
 Suggested short description:
 
@@ -52,13 +52,19 @@ Nothing about the game changes. Same files, same saves, same content.
 [*]On the project page, click the green [b]Code[/b] button, then [b]Download ZIP[/b].
 [*]Double-click the downloaded zip to unpack it.
 [*]Open the unpacked folder and double-click [b]Install.command[/b].
-[*]Wait about a minute; it downloads roughly 115 MB.
+[*]Wait well under a minute; it downloads roughly 115 MB.
 [*]Open [b]Curious Expedition (Metal)[/b] from your Applications folder.
 [/list]
 
 No questions, no password, nothing to type.
 
-If macOS says Install.command is from an unidentified developer, right-click it, choose [b]Open[/b], and confirm once. The project has no Apple signing certificate, so Gatekeeper is cautious about downloaded files. Once only.
+If macOS refuses to open Install.command, it is Gatekeeper checking a downloaded script, because the project has no Apple signing certificate. Approve it once.
+
+Most reliable: open Terminal, type [b]bash [/b] (with a trailing space), drag Install.command from Finder into the Terminal window, and press Return. Gatekeeper does not gate scripts started that way.
+
+Otherwise: right-click Install.command -> [b]Open[/b] -> [b]Open[/b], or allow it under System Settings -> Privacy & Security -> "Open Anyway" if that option is missing.
+
+The app the installer creates needs no approval at all, because it is built on your own Mac.
 
 [h1]Uninstall[/h1]
 

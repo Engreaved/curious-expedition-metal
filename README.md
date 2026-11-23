@@ -23,14 +23,28 @@ around it changes.
 3. When it finishes, open **Curious Expedition (Metal)** from your Applications
    folder.
 
-No questions, no password, no configuration, nothing to type. About a minute and
-roughly 115 MB of downloads. Running it twice is harmless.
+No questions, no password, no configuration, nothing to type. Usually well under
+a minute, with roughly 115 MB of downloads. Running it twice is harmless.
 
-If macOS says **Install.command** is from an unidentified developer, right-click
-it → **Open** → confirm once. This project has no Apple signing certificate, so
-Gatekeeper is cautious about downloaded files. Once only.
+### If macOS refuses to open Install.command
 
-Terminal equivalent: `./install.sh`. Steam library on another drive:
+This project cannot pay for an Apple signing certificate, so macOS treats the
+downloaded script as untrusted. You approve it **once**, then it never asks
+again. Two ways, in order of reliability:
+
+1. **Run it from Terminal instead.** Open Terminal, type `bash ` (with a trailing
+   space), drag `Install.command` from Finder into the Terminal window, and press
+   Return. Gatekeeper does not gate scripts started this way, so nothing is
+   blocked. This is the method most likely to just work.
+2. **Approve it in Finder.** Right-click `Install.command` → **Open** → **Open**.
+   On recent macOS versions that option is missing and you instead allow it under
+   **System Settings → Privacy & Security → "Open Anyway"** after the first attempt.
+
+The app the installer *creates* — **Curious Expedition (Metal)** — needs no
+approval at all: macOS only gates files that arrived from the internet, and this
+one is built on your own Mac.
+
+Steam library on another drive:
 `TCE_GAME_DIR='/path/to/The Curious Expedition' ./install.sh`.
 
 ## Uninstall
@@ -40,7 +54,7 @@ the game back exactly as Steam shipped it. Your saves are never touched.
 
 ## What it touches
 
-- `~/Library/Application Support/CuriousExpedition-Metal` — the new runtime (~268 MB)
+- `~/Library/Application Support/CuriousExpedition-Metal` — the new runtime (~270 MB)
 - `~/Applications/Curious Expedition (Metal).app` — the launcher
 
 Nothing else. No system files, no background processes, no analytics, nothing
@@ -48,7 +62,7 @@ sent anywhere.
 
 ## No game files here
 
-This repository ships about twenty kilobytes of text and **no game content**. The
+This repository ships about forty kilobytes of text and **no game content**. The
 game is read from the copy you already own on Steam and never copied. That is
 why it must already be installed.
 
