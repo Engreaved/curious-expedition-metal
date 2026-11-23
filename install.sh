@@ -18,8 +18,14 @@ die() { echo "error: $*" >&2; exit 1; }
 [ "$(uname -m)" = "arm64" ] || die "this build targets Apple Silicon (arm64). On Intel the shipped runtime is already native."
 [ "$(sw_vers -productVersion | cut -d. -f1)" -ge 11 ] || die "macOS 11 or newer is required"
 
-GAME="$HOME/Library/Application Support/Steam/steamapps/common/The Curious Expedition"
-[ -f "$GAME/app/play-electron.html" ] || die "The Curious Expedition not found at: $GAME (install it from Steam first)"
+for tool in curl unzip tar shasum; do
+  command -v "$tool" >/dev/null 2>&1 || die "missing required tool: $tool"
+done
+
+GAME="${TCE_GAME_DIR:-$HOME/Library/Application Support/Steam/steamapps/common/The Curious Expedition}"
+[ -f "$GAME/app/play-electron.html" ] || die "The Curious Expedition not found at: $GAME
+  Install it from Steam first. If your Steam library is on another drive, point at it explicitly:
+    TCE_GAME_DIR='/path/to/steamapps/common/The Curious Expedition' ./install.sh"
 
 echo "game:    $GAME"
 echo "runtime: $RUNTIME"
@@ -29,11 +35,17 @@ mkdir -p "$RUNTIME" "$HOME/Applications"
 if [ ! -x "$RUNTIME/electron/Electron.app/Contents/MacOS/Electron" ]; then
   echo "downloading Electron $ELECTRON_VERSION (arm64) ..."
   tmp="$(mktemp -d)"
-  curl -fL --retry 3 --progress-bar -o "$tmp/electron.zip" \
-    "https://github.com/electron/electron/releases/download/v$ELECTRON_VERSION/electron-v$ELECTRON_VERSION-darwin-arm64.zip"
+  asset="electron-v$ELECTRON_VERSION-darwin-arm64.zip"
+  base="https://github.com/electron/electron/releases/download/v$ELECTRON_VERSION"
+  curl -fL --retry 3 --progress-bar -o "$tmp/$asset" "$base/$asset"
+  curl -fsSL --retry 3 -o "$tmp/SHASUMS256.txt" "$base/SHASUMS256.txt"
+  want="$(awk -v f="$asset" '$2 == "*" f {print $1}' "$tmp/SHASUMS256.txt")"
+  have="$(shasum -a 256 "$tmp/$asset" | awk '{print $1}')"
+  [ -n "$want" ] && [ "$want" = "$have" ] || die "Electron download failed its SHA-256 check (expected '$want', got '$have')"
+
   rm -rf "$RUNTIME/electron"
   mkdir -p "$RUNTIME/electron"
-  unzip -q -o "$tmp/electron.zip" -d "$RUNTIME/electron"
+  unzip -q -o "$tmp/$asset" -d "$RUNTIME/electron"
   rm -rf "$tmp"
 fi
 
@@ -49,8 +61,18 @@ if [ ! -d "$RUNTIME/node_modules/@electron/remote" ]; then
   rm -rf "$tmp"
 fi
 
+# Prove the runtime actually starts before claiming success.
+EL_BIN="$RUNTIME/electron/Electron.app/Contents/MacOS/Electron"
+[ -x "$EL_BIN" ] || die "runtime binary missing after extraction: $EL_BIN"
+got="$(env -u ELECTRON_RUN_AS_NODE "$EL_BIN" --version 2>/dev/null | head -1)"
+[ "$got" = "v$ELECTRON_VERSION" ] || die "the runtime does not start (got '$got').
+  If this machine blocks the download or the binary, the game cannot run; nothing was changed."
+
 cp "$HERE/files/shim.js" "$RUNTIME/shim.js"
 cp "$HERE/files/preload.js" "$RUNTIME/preload.js"
+
+# Remember where the game actually is, so the launcher does not assume the default path.
+printf '%s\n' "$GAME" > "$RUNTIME/game-path"
 
 # --- launcher app ---
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
@@ -78,7 +100,8 @@ cat > "$APP/Contents/MacOS/launch" <<'LAUNCH'
 # Paths resolve at run time so the bundle works for any user, not just the installer's.
 set -eu
 BASE="$HOME/Library/Application Support/CuriousExpedition-Metal"
-GAME="$HOME/Library/Application Support/Steam/steamapps/common/The Curious Expedition/app/play-electron.html"
+GAMEDIR="$(cat "$BASE/game-path" 2>/dev/null || echo "$HOME/Library/Application Support/Steam/steamapps/common/The Curious Expedition")"
+GAME="$GAMEDIR/app/play-electron.html"
 EL="$BASE/electron/Electron.app/Contents/MacOS/Electron"
 [ -x "$EL" ]   || { echo "runtime missing: $EL (re-run install.sh)" >&2; exit 1; }
 [ -f "$GAME" ] || { echo "game files missing: $GAME" >&2; exit 1; }
@@ -94,8 +117,8 @@ if [ "$WANT_STEAM" = "1" ]; then
 #!/bin/bash
 # Repointed at the arm64 Metal runtime by install.sh --steam.
 # Restore with uninstall.sh, or with Steam's Verify integrity of game files.
-GAME_DIR="$HOME/Library/Application Support/Steam/steamapps/common/The Curious Expedition"
 RUNTIME="$HOME/Library/Application Support/CuriousExpedition-Metal"
+GAME_DIR="$(cat "$RUNTIME/game-path" 2>/dev/null || echo "$HOME/Library/Application Support/Steam/steamapps/common/The Curious Expedition")"
 unset ELECTRON_RUN_AS_NODE
 exec "$RUNTIME/electron/Electron.app/Contents/MacOS/Electron" "$RUNTIME/shim.js" "$GAME_DIR/app/play-electron.html"
 STEAM

@@ -34,15 +34,30 @@ promise of a cooler laptop; at 120 fps the machine does twice the work per secon
 
 ## Install
 
+Two ways to get the files — the zip needs no `git` and no developer tools:
+
+- **Download ZIP**: green `Code` button → `Download ZIP`, then double-click the
+  zip to unpack it.
+- **git**: `git clone <this repo>`
+
+Then, in Terminal:
+
 ```bash
-git clone <this repo>
-cd curious-expedition-metal
+cd curious-expedition-metal      # the folder you just unpacked or cloned
 ./install.sh
 ```
 
-This downloads Electron 45.4.1 (arm64) and `@electron/remote` 2.1.4 into
-`~/Library/Application Support/CuriousExpedition-Metal`, and creates
-`~/Applications/Curious Expedition (Metal).app`. Double-click that to play.
+The installer downloads Electron 45.4.1 (arm64) and `@electron/remote` 2.1.4,
+checks the Electron download against the publisher's SHA-256, proves the runtime
+starts, then creates `~/Applications/Curious Expedition (Metal).app`.
+Double-click that to play. It takes about ten seconds on a fast connection.
+
+**Steam library on another drive?** The installer looks in the default location
+only, and says so instead of guessing:
+
+```bash
+TCE_GAME_DIR='/Volumes/YourDrive/SteamLibrary/steamapps/common/The Curious Expedition' ./install.sh
+```
 
 To make **Steam's own Play button** use the new runtime:
 
@@ -77,6 +92,15 @@ breaks in confusing ways:
 false` and loads the game's own `play-electron.html`. `files/preload.js` aliases
 `@electron/remote` back onto the `electron` module so the game's
 `require("electron").remote` calls resolve.
+
+Two deliberate choices worth knowing:
+
+- **`webSecurity` is left on.** Disabling it would also work, but the game loads
+  all 146 assets with only `allow-file-access-from-files`, so there is no reason
+  to turn a protection off. Verified: the game boots to its main menu without it.
+- **Failures are loud.** If the runtime is incomplete or the game page is missing,
+  the shim shows an error box and exits instead of sitting on the loading screen
+  forever — which is exactly how this game fails when `remote` is absent.
 
 The game is never copied — it is loaded in place from your Steam library.
 

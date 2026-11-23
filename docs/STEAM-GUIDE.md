@@ -47,9 +47,16 @@ No game files are modified by default and none are redistributed — the game is
 Open Terminal and run:
 
 [code]
+# either download the ZIP from the green Code button, or:
 git clone https://github.com/YOUR-NAME/curious-expedition-metal
 cd curious-expedition-metal
 ./install.sh
+[/code]
+
+If your Steam library lives on another drive, point the installer at it:
+
+[code]
+TCE_GAME_DIR='/Volumes/YourDrive/SteamLibrary/steamapps/common/The Curious Expedition' ./install.sh
 [/code]
 
 Then launch [b]Curious Expedition (Metal)[/b] from your Applications folder, or from Spotlight.
