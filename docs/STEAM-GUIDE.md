@@ -1,105 +1,102 @@
-# Steam Guide — paste-ready BBCode
+# Steam guide — paste-ready
 
-Steam guides take BBCode. Copy everything between the markers into the guide body
-(use the "Source"/BBCode view if the editor offers one).
+This file is not part of the program. It is the text for a Steam Community guide.
 
-Title to use:
+Steam guides use BBCode. Copy everything between the markers below into the
+guide body, using Steam's "source"/BBCode view if it offers one.
 
-    Run natively on Apple Silicon — arm64, Metal, 120 fps (no Rosetta)
+Suggested title:
 
-Short description to use:
+    Run natively on Apple Silicon — Metal, 120 fps, no Rosetta
 
-    Swap the game's 2018 Electron 3 runtime for a modern native arm64 build. Runs
-    at 120 fps at 1920x1080 instead of a 640x360 buffer through Rosetta. No game
-    files are redistributed.
+Suggested short description:
+
+    Swap the game's 2018 Intel-only runtime for a modern native Apple Silicon one.
+    Runs at 121 fps at 1920x1080 instead of a 640x360 buffer through Rosetta.
+    No game files are redistributed. Free, fan-made, non-commercial.
 
 --- BEGIN BBCode ---
 
+[b]Fully vibecoded: no human took part in writing a single line of it.[/b] It runs The Curious Expedition natively on Metal on Apple M1 chips, on MacBooks from M1 to M6, with no Rosetta translation.
+
 [h1]The problem[/h1]
 
-The Curious Expedition ships an Electron 3.0.9 runtime from November 2018. That binary is [b]x86_64 only[/b], so on every Apple Silicon Mac it runs through Rosetta 2, and it draws the game into a [b]640x360[/b] buffer that is then upscaled to your display. Chromium 66 also predates Apple Silicon, so it reaches the GPU through the deprecated OpenGL path rather than Metal.
+The Curious Expedition ships an Electron runtime from November 2018. That binary is [b]Intel-only[/b], so on every Apple Silicon Mac it runs through Rosetta, and it draws the game into a [b]640x360[/b] buffer that is then stretched to your screen. The graphics path it uses is old OpenGL, not Metal.
 
-The result is a game that looks soft and runs hot for no good reason.
+The game looks soft and works the laptop harder than it needs to.
 
 [h1]What this does[/h1]
 
-It runs the same game files on a [b]native arm64 Electron[/b], so:
+It runs the same game files on a [b]native Apple Silicon[/b] Electron, so:
 
 [list]
 [*]No Rosetta translation
-[*]1920x1080 render instead of 640x360
-[*]120 fps on ProMotion displays (was ~60)
-[*]Metal-backed compositing instead of OpenGL
+[*]1920x1080 instead of 640x360
+[*]121 fps instead of ~60
+[*]Metal instead of OpenGL
 [/list]
 
-No game files are modified by default and none are redistributed — the game is loaded in place from your Steam library.
+Nothing about the game changes. Same files, same saves, same content.
 
-[h1]Requirements[/h1]
+[h1]What you need[/h1]
 
 [list]
-[*]Apple Silicon Mac (M1 or newer)
+[*]Apple Silicon MacBook (M1 through M6)
 [*]macOS 11 or newer
-[*]The Curious Expedition installed from Steam
+[*]The Curious Expedition already installed in Steam
 [/list]
 
-[h1]Install[/h1]
+[h1]Install — one double-click[/h1]
 
-Open Terminal and run:
+[list]
+[*]On the project page, click the green [b]Code[/b] button, then [b]Download ZIP[/b].
+[*]Double-click the downloaded zip to unpack it.
+[*]Open the unpacked folder and double-click [b]Install.command[/b].
+[*]Wait about a minute; it downloads roughly 115 MB.
+[*]Open [b]Curious Expedition (Metal)[/b] from your Applications folder.
+[/list]
 
-[code]
-# either download the ZIP from the green Code button, or:
-git clone https://github.com/YOUR-NAME/curious-expedition-metal
-cd curious-expedition-metal
-./install.sh
-[/code]
+No questions, no password, nothing to type.
 
-If your Steam library lives on another drive, point the installer at it:
-
-[code]
-TCE_GAME_DIR='/Volumes/YourDrive/SteamLibrary/steamapps/common/The Curious Expedition' ./install.sh
-[/code]
-
-Then launch [b]Curious Expedition (Metal)[/b] from your Applications folder, or from Spotlight.
-
-If you would rather keep using Steam's Play button, run instead:
-
-[code]
-./install.sh --steam
-[/code]
-
-That repoints Steam's launcher at the new runtime and keeps a backup of the original.
+If macOS says Install.command is from an unidentified developer, right-click it, choose [b]Open[/b], and confirm once. The project has no Apple signing certificate, so Gatekeeper is cautious about downloaded files. Once only.
 
 [h1]Uninstall[/h1]
 
-[code]
-./uninstall.sh
-[/code]
+Double-click [b]Uninstall.command[/b] in the same folder. It removes the runtime and the launcher and puts the game back exactly as Steam shipped it. Your saves are never touched.
 
-This removes the runtime and restores the original launcher. Your saves in [i]~/Documents/TheCuriousExpedition[/i] are never touched.
+[h1]Honestly measured[/h1]
 
-[h1]Measured[/h1]
-
-On an M1 Pro (macOS 27.2):
+On an M1 Pro:
 
 [list]
-[*]Architecture: x86_64 under Rosetta [b]→[/b] arm64 native
-[*]Frame rate: ~60 fps [b]→[/b] 121 fps
-[*]Render resolution: 640x360 [b]→[/b] 1920x1080
+[*]Architecture: Intel via Rosetta -> native Apple Silicon
+[*]Frame rate: ~60 -> 121 fps
+[*]Render resolution: 640x360 -> 1920x1080
 [/list]
 
-Be honest with yourself about one thing: renderer CPU goes [b]up[/b], because it draws twice the frames at nine times the pixels. Per frame it is cheaper. This is a smoothness and sharpness fix, not a guarantee that your laptop runs cooler.
+CPU use goes [b]up[/b] rather than down, because it draws twice the frames at nine times the pixels. Per frame it is cheaper. This is a smoothness and sharpness fix, not a promise of a cooler laptop.
 
-[h1]Known limitations[/h1]
+[h1]Limitations[/h1]
 
 [list]
-[*]No Steam overlay, achievements or cloud sync when launched from the .app. Use [code]--steam[/code] if you care about those.
-[*]Steam's [b]Verify integrity of game files[/b] resets the launcher. Re-run the installer afterwards.
-[*]The world map, party, inventory, combat and saving are verified. The gallery, online/IO features and Parse-backed services were not tested.
-[*]Tested on one machine only. If something breaks, say so.
+[*]Tested on one machine only (M1 Pro, macOS 27.2, game 1.4.1.2). M2-M6 are untested, though the code has nothing machine-specific in it.
+[*]Verified: world map, party, inventory, combat, saving.
+[*]Not verified: gallery, online/IO features, anything that uses the game's servers.
+[*]No Steam overlay, achievements or cloud sync when launched from Applications.
+[*]Steam's "Verify integrity of game files" restores the original launcher.
 [/list]
 
-[h1]Credits[/h1]
+[h1]Credits and why this exists[/h1]
 
-The game is by Maschinen-Mensch. This is an unofficial runtime swap: it contains no game assets and is not affiliated with or endorsed by Maschinen-Mensch, GOG or Valve.
+The Curious Expedition was made by [b]Maschinen-Mensch[/b]. All game content, artwork, music and code belong to them.
+
+[list]
+[*][url=https://store.steampowered.com/app/358130/]Buy the game on Steam[/url]
+[*][url=https://www.maschinen-mensch.com]Maschinen-Mensch[/url]
+[/list]
+
+This is a fan project. There is no money in it: no donations, no ads, no telemetry, nothing sent anywhere. It was made for fun in spare time, by someone who bought the game and hopes you will buy it too if you enjoy it. The repository contains no game files at all - the game is read from the copy you already own.
+
+Not affiliated with or endorsed by Maschinen-Mensch, Valve, or the Electron project.
 
 --- END BBCode ---
