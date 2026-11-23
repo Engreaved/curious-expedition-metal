@@ -108,13 +108,22 @@ a guarantee.
 **What you see:** achievements never unlock; the Workshop button does nothing; the
 log says `GREENWORKS failed init`.
 **Why:** the game talks to Steam through `app/lib/greenworks-osx64.node`, a native
-module shipped with the game. It is **x86_64 only** and built for the Node ABI of
-the 2018 engine. On Apple Silicon the loader refuses it outright:
+module shipped with the game. Inspected with REA, it has three properties that each
+block it on Apple Silicon on their own:
 
-    incompatible architecture (have 'x86_64', need 'arm64e, arm64')
+- **x86_64 only.** The loader refuses it outright: `incompatible architecture (have
+  'x86_64', need 'arm64e, arm64')`.
+- **Built against V8, not N-API.** It imports 47 `v8::` symbols and zero `napi_`
+  symbols, so it is ABI-locked to one Electron major. It cannot be reused across
+  versions without a rebuild.
+- **It needs `@loader_path/libsteam_api.dylib`**, and the copy shipped with the game
+  is `i386 + x86_64` — no arm64 slice. A rebuilt addon would still have nothing to
+  link against.
 
-This is not a setting to flip. It would need the module rebuilt for arm64 and the
-modern ABI, and neither its source nor the Steamworks SDK ships with the game.
+So this is not a recompile. It needs the Steamworks SDK, which ships arm64 libraries
+only from SDK 1.52 onward, is distributed to partners under Valve's agreement, and
+cannot be redistributed by a third party — plus the greenworks source ported from
+NAN to a current V8.
 **What to do:** understand the trade. The original runtime has achievements
 precisely because it runs x86_64 under Rosetta with a matching ABI — that is what
 you give up for native speed. Playtime, the overlay and cloud save sync do **not**

@@ -84,6 +84,18 @@ if (!fs.existsSync(page)) {
 app.commandLine.appendSwitch('allow-file-access-from-files');
 app.commandLine.appendSwitch('ignore-gpu-blocklist');
 
+// Turn off Chromium's own background traffic, so the runtime itself contacts
+// nothing. These affect Electron's internal services only (component updates,
+// domain-reliability reports, sync, link pings, speculative connections); they
+// do NOT block the game's own requests to its servers, which is why they are
+// safe here. Measured, not assumed: see the README's telemetry section for the
+// list of hosts the running game actually opens connections to.
+app.commandLine.appendSwitch('disable-background-networking');
+app.commandLine.appendSwitch('disable-component-update');
+app.commandLine.appendSwitch('disable-domain-reliability');
+app.commandLine.appendSwitch('disable-sync');
+app.commandLine.appendSwitch('no-pings');
+
 // Electron is ready once this callback fires; before that, no window can exist.
 app.whenReady().then(() => {
   const win = new BrowserWindow({

@@ -103,6 +103,26 @@ who bought the game and would like you to buy it too if you enjoy it.
 Not affiliated with or endorsed by Maschinen-Mensch, Valve, or the Electron
 project.
 
+## Network and telemetry
+
+- **The runtime makes no network calls.** `shim.js` and `preload.js` contain no fetch,
+  no HTTP client, nothing. The only file that uses `curl` is `install.sh`, twice, to
+  download the two pinned files during installation.
+- **Chromium's own background services are switched off** in `shim.js`
+  (`disable-background-networking`, `disable-component-update`,
+  `disable-domain-reliability`, `disable-sync`, `no-pings`), so the engine does not
+  check for component updates or report anything. These switches affect Electron's
+  internals only; the game's own requests still work.
+- **The one dependency downloaded at install time**, `@electron/remote`, is 18 KB of
+  JavaScript with no dependencies and no network code.
+- **Measured, with the game running**: the entire process tree held exactly **one**
+  outbound connection, to `217.160.0.118` — which is `maschinen-mensch.com` and
+  `curious-expedition.com`, the developer's own site, opened by the game's own code.
+  Nothing of ours, and nothing third-party.
+
+Nothing is sent anywhere by this project. There is no analytics, no crash upload, no
+update check, and no identifier of any kind.
+
 ## Security, plainly
 
 What the installer does that involves trust:
