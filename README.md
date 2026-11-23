@@ -1,4 +1,4 @@
-Fully vibecoded: no human took part in writing a single line of it. It runs The Curious Expedition natively on Metal on Apple M1 chips, on MacBooks from M1 to M6, with no Rosetta translation.
+Fully vibecoded: no human took part in writing a single line of it. It runs The Curious Expedition natively on Metal on Apple Silicon Macs (M1 through M6), with no Rosetta translation.
 
 # Curious Expedition on Metal
 
@@ -8,10 +8,16 @@ then stretched to your screen. This project swaps that runtime for a modern
 native one. The game is untouched — same files, same saves — only the engine
 around it changes.
 
+Rosetta is also on a clock. Apple's own developer notice states that **macOS 27 is
+the final release to support Rosetta**, and that Intel-only apps will no longer
+run on Apple silicon after it ([Apple](https://developer.apple.com/news/?id=w5ngl9k2)).
+This is not only a speed fix — it is what keeps a 2018 game playable on this Mac
+at all.
+
 | | as shipped (2018) | with this project |
 |---|---|---|
 | Architecture | Intel, via Rosetta | **native Apple Silicon** |
-| Frame rate | about 60 fps | **121 fps** |
+| Frame rate | about 60 fps | **up to 120 fps** (your display's refresh) |
 | Render resolution | 640×360, stretched | **1920×1080** |
 | Graphics path | old OpenGL | **Metal** |
 
@@ -20,8 +26,11 @@ around it changes.
 1. Download this repository: green **Code** button → **Download ZIP**, then
    double-click the zip to unpack it. (git works too, but is not needed.)
 2. Double-click **Install.command** in the unpacked folder.
-3. When it finishes, open **Curious Expedition (Metal)** from your Applications
-   folder.
+3. When it finishes, open **Curious Expedition (Metal)** with Spotlight
+   (⌘-Space, type its name). It installs into *your user* Applications folder,
+   `~/Applications` — **not** `/Applications` — so the "Applications" item in
+   Finder's sidebar will not show it. That location is deliberate: no
+   administrator password is needed to write there.
 
 No questions, no password, no configuration, nothing to type. Usually well under
 a minute, with roughly 115 MB of downloads. Running it twice is harmless.
@@ -85,10 +94,14 @@ project.
 
 What the installer does that involves trust:
 
-- Both downloads are HTTPS **and checksum-verified** before anything is unpacked:
-  Electron against the publisher's `SHASUMS256.txt`, `@electron/remote` against
-  the SHA-512 the package registry publishes. A mismatch stops the install and
-  changes nothing.
+- Both downloads are HTTPS **and verified against hashes pinned inside
+  `install.sh` itself** — not against a checksum fetched from the server that
+  served the file. That distinction matters: a checksum downloaded beside the
+  download only catches a corrupted transfer, because anything able to replace
+  the file could replace the checksum too. With the hash in the script, swapping
+  the file means editing code you can read. Verified in both directions: a real
+  download passes, and a deliberately wrong hash stops the install and leaves
+  nothing behind.
 - It never asks for a password, never uses `sudo`, and never writes outside your
   home folder.
 - It uses one temporary folder, deleted when the script exits however it exits.
@@ -124,7 +137,7 @@ Full explanation and measurements: [DESCRIPTION.md](DESCRIPTION.md).
 Known bugs, caveats and untested areas: [KNOWN-ISSUES.md](KNOWN-ISSUES.md).
 Ready-to-paste Steam guide: [docs/STEAM-GUIDE.md](docs/STEAM-GUIDE.md).
 
-## Licence
+## License
 
 MIT — see [LICENSE](LICENSE). Electron and `@electron/remote` are MIT and are
 downloaded at install time, never redistributed.

@@ -47,9 +47,24 @@ set -euo pipefail
 # Exact versions we build against. Pinned on purpose: a newer Electron could
 # change behaviour under us without warning.
 # Breadcrumb: bumping these is the only supported way to update the runtime.
-# The checksums below are tied to these numbers; read KNOWN-ISSUES.md #13 first.
+# The hashes below are tied to these numbers; read KNOWN-ISSUES.md #13 first.
 ELECTRON_VERSION="45.4.1"
 REMOTE_VERSION="2.1.4"
+
+# The expected fingerprints of the two downloads, checked in the script itself.
+#
+# These are deliberately NOT downloaded from the servers that serve the files.
+# A checksum fetched from beside a download only proves the transfer did not
+# corrupt; it cannot prove the file is the one the publisher intended, because
+# anything able to replace the file can replace the checksum too. Pinning the
+# hashes here means changing the file requires changing this readable script.
+#
+#   electron-v45.4.1-darwin-arm64.zip   SHA-256, from Electron's published
+#                                       SHASUMS256.txt for the same release
+#   @electron/remote 2.1.4 tarball      SHA-512, base64, as the npm registry
+#                                       publishes for that version
+ELECTRON_SHA256="d080c3b05a01bd16137f2c12ab9ebf083c577757fe846844ba325bafa8e8bdf4"
+REMOTE_SHA512="5NMDIu9VYoikv5isuGHnuB6Hm3IKWasEvbDxgPYs8yrCICxLiOaucocFz9tYQEokyrqZce6avBFXj0SXuowSiw=="
 
 # Where the pieces live. HOME is the current user's home folder.
 RUNTIME="$HOME/Library/Application Support/CuriousExpedition-Metal"
@@ -132,20 +147,15 @@ if [ ! -x "$RUNTIME/electron/Electron.app/Contents/MacOS/Electron" ]; then
   curl -fL --retry 3 --progress-bar -o "$work/$asset" "$base/$asset" \
     || die "could not download Electron. Check your internet connection and try again."
 
-  # The publisher's list of checksums. We use it to prove the download arrived
-  # intact and unmodified before letting macOS run any of it.
+  # Compare against the hash pinned at the top of this file. Nothing is fetched
+  # from the download server to help with this check.
   # Breadcrumb: this is a supply-chain check, not a formality. If it fails, do not
-  # "just re-run with the check removed" - a mismatched binary means something is
+  # "just re-run with the check removed" - a mismatched archive means something is
   # wrong with the connection or the source.
-  curl -fsSL --retry 3 -o "$work/SHASUMS256.txt" "$base/SHASUMS256.txt" \
-    || die "could not download the checksum list needed to verify Electron."
-
-  # Compare the checksum the publisher publishes with the one we computed.
-  want="$(awk -v f="$asset" '$2 == "*" f {print $1}' "$work/SHASUMS256.txt")"
   have="$(shasum -a 256 "$work/$asset" | awk '{print $1}')"
-  [ -n "$want" ] && [ "$want" = "$have" ] \
-    || die "the Electron download did not match its published checksum, so it was not used.
-  expected: ${want:-<not found in checksum list>}
+  [ "$ELECTRON_SHA256" = "$have" ] \
+    || die "the Electron download did not match the hash pinned in this script, so it was not used.
+  expected: $ELECTRON_SHA256
   actual:   $have
   Nothing on your Mac was changed."
 
@@ -167,16 +177,11 @@ if [ ! -d "$RUNTIME/node_modules/@electron/remote" ]; then
     "https://registry.npmjs.org/@electron/remote/-/remote-$REMOTE_VERSION.tgz" \
     || die "could not download @electron/remote. Check your connection and try again."
 
-  # Prove the download is exactly the file the package registry published: the
-  # registry states a SHA-512 for every release, and we recompute it locally.
-  curl -fsSL --retry 3 -o "$work/remote-meta.json" \
-    "https://registry.npmjs.org/@electron/remote/$REMOTE_VERSION" \
-    || die "could not download the metadata needed to verify @electron/remote."
-
-  want512="$(sed -n 's/.*"integrity":"sha512-\([^"]*\)".*/\1/p' "$work/remote-meta.json" | head -1)"
+  # Same rule as the Electron archive: compare against the pinned hash, not
+  # against metadata fetched from the server that just handed us the file.
   have512="$(openssl dgst -sha512 -binary "$work/remote.tgz" | openssl base64 -A)"
-  [ -n "$want512" ] && [ "$want512" = "$have512" ] \
-    || die "the @electron/remote download did not match its published checksum, so it was not used.
+  [ "$REMOTE_SHA512" = "$have512" ] \
+    || die "the @electron/remote download did not match the hash pinned in this script, so it was not used.
   Nothing on your Mac was changed."
 
   tar -xzf "$work/remote.tgz" -C "$work" || die "could not unpack @electron/remote."

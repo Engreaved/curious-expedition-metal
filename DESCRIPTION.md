@@ -1,4 +1,4 @@
-Fully vibecoded: no human took part in writing a single line of it. It runs The Curious Expedition natively on Metal on Apple M1 chips, on MacBooks from M1 to M6, with no Rosetta translation — faster loading, a sharper picture, and less heat.
+Fully vibecoded: no human took part in writing a single line of it. It runs The Curious Expedition natively on Metal on Apple Silicon Macs (M1 through M6), with no Rosetta translation — faster loading, a sharper picture, and less heat.
 
 ---
 
@@ -21,12 +21,18 @@ This project replaces the old runtime with a modern one that runs natively on
 Apple Silicon and draws through Metal. The game itself is untouched: same files,
 same saves, same content. Only the engine around it changes.
 
+There is a deadline attached to this. Apple's developer notice says **macOS 27 is
+the final release to support Rosetta**, and that Intel-only apps will not run on
+Apple silicon after it ([Apple](https://developer.apple.com/news/?id=w5ngl9k2)).
+Without this swap, a 2018 Intel-only game stops being playable on this Mac
+entirely — the speed and sharpness are the bonus, not the point.
+
 What that looks like in practice, measured on an M1 Pro:
 
 | | as shipped (2018) | with this project |
 |---|---|---|
 | Architecture | Intel, translated by Rosetta | **native Apple Silicon** |
-| Frame rate | about 60 fps | **121 fps** |
+| Frame rate | about 60 fps | **up to 120 fps** (your display's refresh) |
 | Render resolution | 640×360, stretched | **1920×1080** |
 | Graphics path | old OpenGL | **Metal** |
 
@@ -86,8 +92,10 @@ will tell you so and stop.
    double-click the zip to unpack it). Using git is fine too, but not required.
 2. Open the unpacked folder and double-click **Install.command**.
 3. Wait well under a minute. It downloads roughly 115 MB.
-4. When it finishes, the game is in your Applications folder as
-   **Curious Expedition (Metal)**. Double-click it to play.
+4. When it finishes, open **Curious Expedition (Metal)** with Spotlight
+   (⌘-Space, type its name). It lands in *your user* Applications folder,
+   `~/Applications`, not `/Applications` — that is deliberate, so no
+   administrator password is needed.
 
 That is the whole procedure. No questions, no password, no options, nothing to
 configure. Running it a second time is harmless.
@@ -148,7 +156,7 @@ restores the game exactly as Steam shipped it. Your saves are never touched.
   Applications folder, because Steam is not the parent process. Use
   `./install.sh --steam` if you want Steam to own the launch.
 
-## Licence
+## License
 
 The scripts here are released under the MIT licence (see `LICENSE`). Electron is
 MIT and is downloaded at install time, not redistributed. `@electron/remote` is

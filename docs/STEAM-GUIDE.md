@@ -12,12 +12,13 @@ Suggested title:
 Suggested short description:
 
     Swap the game's 2018 Intel-only runtime for a modern native Apple Silicon one.
-    Runs at 121 fps at 1920x1080 instead of a 640x360 buffer through Rosetta.
+    Runs at up to 120 fps (the display's refresh rate) at 1920x1080 instead of a
+    640x360 buffer through Rosetta.
     No game files are redistributed. Free, fan-made, non-commercial.
 
 --- BEGIN BBCode ---
 
-[b]Fully vibecoded: no human took part in writing a single line of it.[/b] It runs The Curious Expedition natively on Metal on Apple M1 chips, on MacBooks from M1 to M6, with no Rosetta translation.
+[b]Fully vibecoded: no human took part in writing a single line of it.[/b] It runs The Curious Expedition natively on Metal on Apple Silicon Macs (M1 through M6), with no Rosetta translation.
 
 [h1]The problem[/h1]
 
@@ -32,7 +33,7 @@ It runs the same game files on a [b]native Apple Silicon[/b] Electron, so:
 [list]
 [*]No Rosetta translation
 [*]1920x1080 instead of 640x360
-[*]121 fps instead of ~60
+[*]Up to 120 fps instead of ~60, if your display refreshes at 120 Hz
 [*]Metal instead of OpenGL
 [/list]
 
@@ -53,7 +54,7 @@ Nothing about the game changes. Same files, same saves, same content.
 [*]Double-click the downloaded zip to unpack it.
 [*]Open the unpacked folder and double-click [b]Install.command[/b].
 [*]Wait well under a minute; it downloads roughly 115 MB.
-[*]Open [b]Curious Expedition (Metal)[/b] from your Applications folder.
+[*]Open [b]Curious Expedition (Metal)[/b] with Spotlight (Cmd-Space). It installs to your user Applications folder (~/Applications), not /Applications, so the Finder sidebar will not show it.
 [/list]
 
 No questions, no password, nothing to type.
@@ -76,7 +77,7 @@ On an M1 Pro:
 
 [list]
 [*]Architecture: Intel via Rosetta -> native Apple Silicon
-[*]Frame rate: ~60 -> 121 fps
+[*]Frame rate: ~60 -> up to 120 fps (this machine's 120 Hz display)
 [*]Render resolution: 640x360 -> 1920x1080
 [/list]
 

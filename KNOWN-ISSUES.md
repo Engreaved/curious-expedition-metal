@@ -35,6 +35,16 @@ exists only to escape Rosetta.
 ### 3. macOS older than 11 is refused **[seen]**
 Electron 45 does not support it. There is no build for those systems.
 
+### 3a. The app is not where Finder says "Applications" is **[seen]**
+**What you see:** you install, then open Finder → Applications and see nothing
+new, and conclude it failed.
+**Why:** the app is installed into *your user* Applications folder,
+`~/Applications`, not the system-wide `/Applications` that the Finder sidebar
+points at. That is deliberate — writing to `/Applications` needs an
+administrator password, and this installer asks for none.
+**What to do:** press ⌘-Space, type "Curious Expedition", press Return. It is
+also in Launchpad.
+
 ---
 
 ## While playing
@@ -76,6 +86,15 @@ cheaper, but per second it is more work.
 **What to do:** close the game when you are not playing. Unlike the original
 runtime, this one does not disable background throttling, so a hidden window
 settles down instead of rendering flat out.
+
+### 7a. The frame rate caps at your display's refresh **[seen]**
+**What you see:** 60 fps on a 60 Hz MacBook Air or an external 60 Hz monitor, not
+the 120 some screenshots show.
+**Why:** the game draws once per screen refresh. It has no internal frame limiter
+above that, so a 120 Hz ProMotion panel gets about 120 and a 60 Hz panel gets
+about 60. The 121 fps figure measured on this machine is its 120 Hz display, not
+a guarantee.
+**What to do:** nothing. It is already drawing as fast as the screen can show.
 
 ### 8. Steam achievements and other Steam features may not work at all **[seen]**
 **What you see:** in the console log, `GREENWORKS failed init: TypeError:
