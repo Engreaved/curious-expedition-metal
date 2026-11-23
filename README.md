@@ -90,8 +90,8 @@ why it must already be installed.
 
 ## Credits
 
-The Curious Expedition was made by **Maschinen-Mensch**. All game content,
-artwork, music and code are theirs.
+**Curious Expedition by Maschinen-Mensch.** All game content, artwork, music and
+code are theirs.
 
 - **Buy the game — https://store.steampowered.com/app/358130/**
 - Studio — https://www.maschinen-mensch.com

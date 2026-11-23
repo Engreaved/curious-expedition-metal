@@ -1,5 +1,7 @@
 // preload.js - runs before the game's own JavaScript, inside the page.
 //
+// Curious Expedition by Maschinen-Mensch. Unofficial, not affiliated with them.
+//
 // THE PROBLEM IT SOLVES
 // The game calls require("electron").remote while it starts up. Historically
 // that was a built-in part of Electron. It was removed in Electron 14 (2022)

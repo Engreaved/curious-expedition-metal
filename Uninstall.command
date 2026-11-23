@@ -3,6 +3,8 @@
 # Double-click this file to remove the runtime swap and go back to the game as
 # Steam shipped it. Runs uninstall.sh next to it.
 #
+# Curious Expedition by Maschinen-Mensch. Unofficial, not affiliated with them.
+#
 # Same Gatekeeper note as Install.command: if macOS refuses to open it the first
 # time, right-click the file, choose Open, and confirm once.
 

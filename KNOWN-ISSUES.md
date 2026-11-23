@@ -1,5 +1,8 @@
 # Known bugs, caveats and rough edges
 
+**Curious Expedition by Maschinen-Mensch.** This file documents an unofficial
+third-party wrapper around their game; the bugs below belong to the wrapper.
+
 Everything here was either observed while building this, or is an honest
 limitation of what it can do. Nothing is hidden to look better.
 

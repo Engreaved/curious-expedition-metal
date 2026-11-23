@@ -2,6 +2,8 @@
 #
 # UNINSTALLER for the "Curious Expedition on Metal" runtime swap.
 #
+# Curious Expedition by Maschinen-Mensch. Unofficial, not affiliated with them.
+#
 # Removes exactly what install.sh created:
 #   1. the downloaded runtime in ~/Library/Application Support/CuriousExpedition-Metal
 #   2. the launcher app in ~/Applications

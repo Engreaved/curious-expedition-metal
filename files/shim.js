@@ -1,6 +1,9 @@
 // shim.js - the small compatibility layer that lets a 2018 game run on a
 // modern Electron.
 //
+// Curious Expedition by Maschinen-Mensch. Unofficial, not affiliated with them.
+// This file contains none of their code.
+//
 // BACKGROUND, SO THIS FILE MAKES SENSE
 // The Curious Expedition is not a normal native game. It is a web page (HTML,
 // JavaScript, a drawing surface) started by Electron. Electron is the same

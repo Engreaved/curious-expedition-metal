@@ -96,7 +96,7 @@ CPU use goes [b]up[/b] rather than down, because it draws twice the frames at ni
 
 [h1]Credits and why this exists[/h1]
 
-The Curious Expedition was made by [b]Maschinen-Mensch[/b]. All game content, artwork, music and code belong to them.
+[b]Curious Expedition by Maschinen-Mensch.[/b] All game content, artwork, music and code belong to them.
 
 [list]
 [*][url=https://store.steampowered.com/app/358130/]Buy the game on Steam[/url]

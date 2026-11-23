@@ -2,6 +2,10 @@
 #
 # INSTALLER for the "Curious Expedition on Metal" runtime swap.
 #
+# Curious Expedition by Maschinen-Mensch. This installer is unofficial: it is not
+# affiliated with, endorsed by, or supported by them, and it distributes none of
+# their work.
+#
 # WHAT THIS IS, IN ONE PARAGRAPH
 # The Curious Expedition is a web game (HTML + JavaScript drawn on a <canvas>)
 # which ships inside an old copy of Electron: version 3.0.9, built in November
@@ -253,6 +257,7 @@ cat > "$APP/Contents/Info.plist" <<'PLIST'
 	<key>NSHighResolutionCapable</key><true/>
 	<key>LSMinimumSystemVersion</key><string>11.0</string>
 	<key>LSApplicationCategoryType</key><string>public.app-category.games</string>
+	<key>NSHumanReadableCopyright</key><string>Curious Expedition by Maschinen-Mensch. Unofficial runtime wrapper; not affiliated with Maschinen-Mensch.</string>
 </dict>
 </plist>
 PLIST
@@ -332,5 +337,9 @@ fi
 echo ""
 echo "  Note: in-game Steam achievements and the Workshop need the game's original"
 echo "  2018 engine. See KNOWN-ISSUES.md #8 for why, and what does still work."
+echo "  Curious Expedition by Maschinen-Mensch. This wrapper is unofficial, not"
+echo "  affiliated with them, and includes none of their work. If you enjoy the"
+echo "  game, please buy it: https://store.steampowered.com/app/358130/"
+echo ""
 echo "  To remove everything later, run Uninstall.command."
 echo ""

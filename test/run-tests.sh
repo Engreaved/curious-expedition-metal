@@ -226,6 +226,14 @@ check_claim "Metal"
 check_claim "M1 through M6"
 check "README records the Rosetta deadline" grep -q "macOS 27" "$REPO/README.md"
 
+# Attribution: every shipped file names the game, so every shipped file must carry
+# the credit. Checked with the exact phrase, not a loose match on the studio name.
+for f in README.md DESCRIPTION.md KNOWN-ISSUES.md docs/STEAM-GUIDE.md \
+         install.sh uninstall.sh Install.command Uninstall.command \
+         files/shim.js files/preload.js; do
+  check "attribution in $f" grep -q "Curious Expedition by Maschinen-Mensch" "$REPO/$f"
+done
+
 # test/ is excluded: this file contains the search pattern itself, and would
 # otherwise report forever that the repository contains an identity.
 if grep -rq -i "localhost\|rundellredhaed" "$REPO" --exclude-dir=test --exclude-dir=.git --include="*.md" --include="*.sh" --include="*.js" 2>/dev/null; then

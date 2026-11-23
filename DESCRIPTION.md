@@ -57,9 +57,9 @@ only thing that supports the people who actually made it.
 
 ## Credits
 
-The Curious Expedition was made by **Maschinen-Mensch** — the studio that
-designed and built it — and published on Steam. All game content, artwork, music
-and code belong to them.
+**Curious Expedition by Maschinen-Mensch** — the studio that designed and built
+it, and published it on Steam. All game content, artwork, music and code belong to
+them.
 
 - Studio: Maschinen-Mensch — https://www.maschinen-mensch.com
 - Game on Steam — https://store.steampowered.com/app/358130/

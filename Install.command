@@ -2,6 +2,8 @@
 #
 # Double-click this file to install.
 #
+# Curious Expedition by Maschinen-Mensch. Unofficial, not affiliated with them.
+#
 # macOS runs a ".command" file in Terminal when you double-click it, which is
 # why this exists: it means a non-technical person never has to type anything.
 # It simply runs install.sh next to it and keeps the window open at the end so
