@@ -51,7 +51,9 @@ if command -v shellcheck >/dev/null 2>&1; then
     bad "shellcheck (warnings and above)"
   fi
 else
-  printf '  skip  shellcheck (not installed)\n'
+  # coding-discipline 3.10: a missing linter fails the gate rather than skipping it.
+  # Skipping let the lint pass degrade to bash -n, which is syntax, not lint.
+  bad "shellcheck (not installed - brew install shellcheck)"
 fi
 
 # ---------------------------------------------------------------------------
@@ -90,8 +92,22 @@ check "installs with a valid environment" test "$code" -eq 0
 check "reports Steam integration by default" grep -q "Steam's Play button now starts" "$SB/out.txt"
 check "creates an executable launcher" test -x "$SB/Applications/Curious Expedition (Metal).app/Contents/MacOS/launch"
 check "repoints Steam's launcher" grep -q "Electron.app/Contents/MacOS/Electron" "$GAME/run_app.sh"
+# Steam starts this file through execve, not through bash: without a shebang that is
+# errno 8 with no fallback (DEAD-ENDS shell:shell-shebang). Grepping for the Electron
+# path alone passed on a launcher that could not start, so the first line is checked.
+check "Steam's launcher starts with a shebang" test "$(head -1 "$GAME/run_app.sh")" = "#!/bin/bash"
+check "Steam's launcher is executable" test -x "$GAME/run_app.sh"
 check "backs up the original launcher" test -f "$GAME/run_app.sh.pre-metal"
 check "records the game path" test "$(cat "$RT/game-path")" = "$GAME"
+
+# The pin stands between a corrupted download and the user's machine, and the sandbox
+# stubs the runtime, so the network path itself cannot run here. These prove the
+# constant is well formed and that it is actually compared - an unused pin is
+# decoration. shortcut: a wrong but well-formed pin still needs the network to catch.
+pin="$(awk -F'"' '/^ELECTRON_SHA256="/ { print $2 }' "$REPO/install.sh")"
+pinlen="$(printf '%s' "$pin" | wc -c | tr -d ' ')"
+check "the Electron pin is one 64-hex SHA-256" test "$pinlen" = "64"
+check "the pin is compared against the download" grep -Fq '"$ELECTRON_SHA256" = "$have"' "$REPO/install.sh"
 rm -rf "$SB"
 
 echo "fault injection"
@@ -236,7 +252,23 @@ done
 
 # test/ is excluded: this file contains the search pattern itself, and would
 # otherwise report forever that the repository contains an identity.
-if grep -rq -i "localhost\|rundellredhaed" "$REPO" --exclude-dir=test --exclude-dir=.git --include="*.md" --include="*.sh" --include="*.js" 2>/dev/null; then
+# The include list must cover every shipped text file. Install.command and
+# Uninstall.command are shell scripts without .sh, and LICENSE and .gitignore have
+# no extension, so a *.sh-only list reported an identity in a .command as clean.
+scan_identity() {
+  grep -rq -i "localhost\|rundellredhaed" "$REPO" --exclude-dir=test --exclude-dir=.git \
+    --include="*.md" --include="*.sh" --include="*.js" --include="*.command" \
+    --include="LICENSE" --include=".gitignore" 2>/dev/null
+}
+# The same include list must still match shipped files, or the negative below
+# passes forever on an empty match set (coding-discipline 3.5).
+scan_control() {
+  grep -rq "Curious Expedition" "$REPO" --exclude-dir=test --exclude-dir=.git \
+    --include="*.md" --include="*.sh" --include="*.js" --include="*.command" \
+    --include="LICENSE" --include=".gitignore" 2>/dev/null
+}
+check "identity scan positive control" scan_control
+if scan_identity; then
   bad "no personal identity in shipped files"
 else
   ok "no personal identity in shipped files"
