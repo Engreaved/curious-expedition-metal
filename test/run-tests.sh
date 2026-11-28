@@ -44,6 +44,15 @@ for f in files/shim.js files/preload.js; do
   if node --check "$REPO/$f" 2>/dev/null; then ok "node --check $f"; else bad "node --check $f"; fi
 done
 
+# The four settings below are the difference between the game starting and a blank
+# canvas or a permanent loading screen. Nothing here can launch Electron, so these are
+# content checks, not behaviour checks - each was calibrated by mutation: changing the
+# line fails exactly that check and no other.
+check "shim enables node integration" grep -q "nodeIntegration: true" "$REPO/files/shim.js"
+check "shim disables context isolation" grep -q "contextIsolation: false" "$REPO/files/shim.js"
+check "shim keeps the GPU blocklist override" grep -q "ignore-gpu-blocklist" "$REPO/files/shim.js"
+check "preload restores electron.remote" grep -q "electron.remote = require('@electron/remote')" "$REPO/files/preload.js"
+
 if command -v shellcheck >/dev/null 2>&1; then
   if shellcheck -S warning "$REPO/install.sh" "$REPO/uninstall.sh" "$REPO/Install.command" "$REPO/Uninstall.command" "$REPO/test/run-tests.sh" 2>/dev/null; then
     ok "shellcheck (warnings and above)"
@@ -97,6 +106,10 @@ check "repoints Steam's launcher" grep -q "Electron.app/Contents/MacOS/Electron"
 # path alone passed on a launcher that could not start, so the first line is checked.
 check "Steam's launcher starts with a shebang" test "$(head -1 "$GAME/run_app.sh")" = "#!/bin/bash"
 check "Steam's launcher is executable" test -x "$GAME/run_app.sh"
+# A shell that inherited ELECTRON_RUN_AS_NODE=1 turns the launcher into a node process
+# (DEAD-ENDS electron:run-as-node). Asserted on the installed file, not the heredoc.
+check "the installed launcher clears ELECTRON_RUN_AS_NODE" \
+  grep -q "unset ELECTRON_RUN_AS_NODE" "$SB/Applications/Curious Expedition (Metal).app/Contents/MacOS/launch"
 check "backs up the original launcher" test -f "$GAME/run_app.sh.pre-metal"
 check "records the game path" test "$(cat "$RT/game-path")" = "$GAME"
 
@@ -104,6 +117,11 @@ check "records the game path" test "$(cat "$RT/game-path")" = "$GAME"
 # stubs the runtime, so the network path itself cannot run here. These prove the
 # constant is well formed and that it is actually compared - an unused pin is
 # decoration. shortcut: a wrong but well-formed pin still needs the network to catch.
+# The runtime is ~250 MB: a failed install that leaves it in /tmp is a disk leak the
+# user cannot see. The pattern is built from a variable to keep the quoting literal.
+work_trap="trap 'rm -rf \"\$work\"' EXIT"
+check "the installer removes its temp dir on exit" grep -Fq "$work_trap" "$REPO/install.sh"
+
 pin="$(awk -F'"' '/^ELECTRON_SHA256="/ { print $2 }' "$REPO/install.sh")"
 pinlen="$(printf '%s' "$pin" | wc -c | tr -d ' ')"
 check "the Electron pin is one 64-hex SHA-256" test "$pinlen" = "64"

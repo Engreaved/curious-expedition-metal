@@ -166,6 +166,26 @@ in this repository for you to read first.
 - Steam's **Verify integrity of game files** restores the original launcher;
   re-run the installer after that.
 
+### If you edit the files
+
+Three settings are load-bearing. Each has one specific symptom when it changes,
+and none of them produces an error message a user would recognise:
+
+| where | if it changes | what you see |
+|---|---|---|
+| `files/shim.js` — `nodeIntegration: true`, `contextIsolation: false` | the page loses `require()` and `__dirname` | **blank canvas**; the console says `__dirname is not defined` |
+| `files/preload.js` — the `electron.remote` alias | the game cannot reach `remote.app.getGPUFeatureStatus()` | **stuck on the loading screen**, no error at all |
+| the installed launcher's `unset ELECTRON_RUN_AS_NODE` | Electron starts as Node instead of as Electron | a **version number in a terminal**, not the game |
+
+`test/run-tests.sh` owns all three, plus the installer's refusals, the Steam
+repoint and backup, uninstall, the pinned download hash, and the credits. Run it
+before and after any change:
+
+    bash test/run-tests.sh
+
+70 checks, about four seconds, no network, and it never touches a real game
+installation — it builds its own sandbox in a temporary directory.
+
 Full explanation and measurements: [DESCRIPTION.md](DESCRIPTION.md).
 Known bugs, caveats and untested areas: [KNOWN-ISSUES.md](KNOWN-ISSUES.md).
 Ready-to-paste Steam guide: [docs/STEAM-GUIDE.md](docs/STEAM-GUIDE.md).
